@@ -6,9 +6,9 @@ using CSV
 
 include("data_loader.jl")
 
-lambda_H = 40
+# lambda_H = 40
 
-periods = collect(1:730)
+# periods = collect(1:730)
 
 #--------------RESULTS FROM MINIMIZING DEVIATION
 q_forecast_calculated = [0.7770338357162985, 0.03580588292933596, 0.016086189924938307, -0.0074103664477346435, -1.5136952354991787e-5]
