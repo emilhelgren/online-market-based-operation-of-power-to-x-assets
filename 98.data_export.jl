@@ -12,8 +12,8 @@ function export_dataframe(df, name)
     CSV.write("$(pwd())\\results\\$name.csv", df)
 end
 
-function easy_export(list_of_dataseries, list_of_names, filename)
-    typed_dataseries = [[list_of_dataseries[i][t] for t in periods] for i=1:length(list_of_dataseries)]
+function easy_export(list_of_dataseries, list_of_names, filename, periods)
+    typed_dataseries = [[list_of_dataseries[i][t] for t in periods] for i = 1:length(list_of_dataseries)]
     df = createDF(typed_dataseries, list_of_names)
     export_dataframe(df, filename)
 

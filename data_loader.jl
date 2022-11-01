@@ -2,11 +2,11 @@ using DataFrames
 using CSV
 
 function mean(arr)
-    return sum(arr)/length(arr)
+    return sum(arr) / length(arr)
 end
 
-
 case_study = true
+negative_prices = false
 
 if (case_study)
 
@@ -17,6 +17,14 @@ if (case_study)
     # lambda_F = DataFrame(CSV.File("./data/2020/prices_formatted.csv"))[:,6]
     lambda_UP = DataFrame(CSV.File("./data/balance_up.csv"))[:, 3]
     lambda_DW = DataFrame(CSV.File("./data/balance_dw.csv"))[:, 3]
+
+    if !negative_prices
+        for i in collect(1:length(lambda_F))
+            lambda_F[i] = max(lambda_F[i], 0)
+            lambda_UP[i] = max(lambda_UP[i], 0)
+            lambda_DW[i] = max(lambda_DW[i], 0)
+        end
+    end
 
     realized = DataFrame(CSV.File("./data/realized.csv"))[:, 2]
     forecast = DataFrame(CSV.File("./data/forecasts.csv"))[:, 2]
@@ -42,7 +50,7 @@ if (case_study)
         lambda_DW = lambda_DW .+ 10
     end
 
-    
+
     # Normalizing so values are in [0, 1.0]
     max_value = max(maximum(realized), maximum(forecast))
 
@@ -77,8 +85,8 @@ else
         8
     ]
 
-    noises = [ 0.14061535,  0.37138286,  0.07020545, -0.29961158,  0.46524342, -0.1333834 ,  0.15858667, -0.08122464,  0.26635708, -0.25882546] 
-    noises2 = [-0.40306416, -0.27295418,  0.17529272, -0.04035053, -0.06424059, -0.39669581,  0.35693065, -0.26102877, -0.31041123, -0.22175083]
+    noises = [0.14061535, 0.37138286, 0.07020545, -0.29961158, 0.46524342, -0.1333834, 0.15858667, -0.08122464, 0.26635708, -0.25882546]
+    noises2 = [-0.40306416, -0.27295418, 0.17529272, -0.04035053, -0.06424059, -0.39669581, 0.35693065, -0.26102877, -0.31041123, -0.22175083]
     forecast = [realized[i] + noises[i] for i in eachindex(realized)]
 
     max_value = max(maximum(realized), maximum(forecast))
@@ -90,8 +98,8 @@ else
     x = x[1:length(realized), 2:size(x)[2]]          # Remove first column which is just the index
     n_features = size(x)[2]
 
-    lambda_UP_s = [[min(lambda_F[i]-3, lambda_F[i]+ noises[i]*10 + noises2[j]) for i in eachindex(lambda_F)] for j in 1:10]
-    lambda_DW_s = [[min(lambda_F[i]+3, lambda_F[i]+ noises[i]*10 + noises2[j]) for i in eachindex(lambda_F)] for j in 1:10]
+    lambda_UP_s = [[min(lambda_F[i] - 3, lambda_F[i] + noises[i] * 10 + noises2[j]) for i in eachindex(lambda_F)] for j in 1:10]
+    lambda_DW_s = [[min(lambda_F[i] + 3, lambda_F[i] + noises[i] * 10 + noises2[j]) for i in eachindex(lambda_F)] for j in 1:10]
 end
 
 
@@ -110,7 +118,7 @@ periods = collect(1:length(lambda_F))
 # periods = collect(1:730*2) # 730 is 1 month
 
 # Random decision
-lambda_H = hydrogen_price       
+lambda_H = hydrogen_price
 # lambda_H = mean(lambda_F)*1.9   
 # lambda_H = 40
 
@@ -121,6 +129,7 @@ for i in eachindex(lambda_F)
     end
 end
 # print(lambda_F_checker)
+
 
 #------------------------CHECK FEATURES FOR MISSING
 
